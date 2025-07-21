@@ -1,0 +1,59 @@
+{
+  "description": "This configuration provides standardized produce categories, typical units, price guidelines, and certifications relevant to Kenyan smallholder farmers and buyers. It ensures clarity in produce listings, supports fair pricing, and helps buyers filter for quality and compliance, aligning with both farmer needs and market expectations.",
+  "produceCategories": [
+    {
+      "name": "Maize",
+      "units": ["kg", "90kg sack"],
+      "priceRangeKES": { "min": 3500, "max": 5500 },
+      "certifications": ["Organic", "Fair Trade", "KEBS Certified"]
+    },
+    {
+      "name": "Tomatoes",
+      "units": ["kg", "crate (30kg)"],
+      "priceRangeKES": { "min": 2500, "max": 4000 },
+      "certifications": ["Organic", "KEBS Certified"]
+    },
+    {
+      "name": "Avocados",
+      "units": ["kg", "bag (50kg)"],
+      "priceRangeKES": { "min": 3000, "max": 6000 },
+      "certifications": ["Organic", "Fair Trade", "GlobalG.A.P."]
+    },
+    {
+      "name": "Potatoes",
+      "units": ["kg", "bag (50kg)"],
+      "priceRangeKES": { "min": 2000, "max": 3500 },
+      "certifications": ["Organic", "KEBS Certified"]
+    },
+    {
+      "name": "Cabbages",
+      "units": ["piece", "bag (50kg)"],
+      "priceRangeKES": { "min": 800, "max": 1500 },
+      "certifications": ["Organic", "KEBS Certified"]
+    },
+    {
+      "name": "Onions",
+      "units": ["kg", "bag (50kg)"],
+      "priceRangeKES": { "min": 3500, "max": 6000 },
+      "certifications": ["Organic", "KEBS Certified"]
+    }
+  ],
+  "certificationsInfo": [
+    {
+      "name": "Organic",
+      "description": "Produce grown without synthetic fertilizers or pesticides, meeting organic standards."
+    },
+    {
+      "name": "Fair Trade",
+      "description": "Ensures fair prices and ethical treatment for farmers."
+    },
+    {
+      "name": "KEBS Certified",
+      "description": "Certified by the Kenya Bureau of Standards for quality and safety."
+    },
+    {
+      "name": "GlobalG.A.P.",
+      "description": "International standard for good agricultural practices, important for export markets."
+    }
+  ]
+}

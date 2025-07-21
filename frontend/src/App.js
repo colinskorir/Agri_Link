@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import Navbar from "./Navbar";
+import Hero from "./Hero";
+import Services from "./Services";
+import AuthForm from "./AuthForm";
+import Dashboard from "./Dashboard";
+import AuthModal from "./AuthModal"
+import React from "react";
 import './App.css';
 import FarmerDashboard from './FarmerDashboard';
 
@@ -481,25 +488,10 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        backgroundImage: `url('https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=1500&q=80')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        position: 'relative',
-      }}
-    >
+    <div className="app-bg">
       {/* Overlay for readability */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'rgba(255,255,255,0.85)',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div className="app-overlay" />
+      <div className="app-content">
         <Navbar onNav={handleNav} current={page} isAuthenticated={!!user} onLogout={handleLogout} />
         <main>
           {showAuthModal ? (
@@ -519,8 +511,8 @@ function App() {
             </>
           )}
         </main>
-        <footer className="bg-green-700 text-white text-center py-4 mt-8">
-          &copy; {new Date().getFullYear()} Agri-Link. All rights reserved.
+        <footer className="bg-green-700 text-white text-center py-4 mt-8 footer-green">
+          &copy; {new Date().getFullYear()} Digi-Shamba. All rights reserved.
         </footer>
       </div>
     </div>
