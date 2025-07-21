@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "./Navbar";
-import Hero from "./Hero";
-import Services from "./Services";
-import AuthForm from "./AuthForm";
-import Dashboard from "./Dashboard";
-import AuthModal from "./AuthModal"
-import React from "react";
 import './App.css';
-import FarmerDashboard from './FarmerDashboard';
 
 function Navbar({ onNav, current, isAuthenticated, onLogout }) {
   const [open, setOpen] = useState(false);
@@ -21,9 +13,7 @@ function Navbar({ onNav, current, isAuthenticated, onLogout }) {
   return (
     <nav aria-label="Main navigation" role="navigation">
       {/* Kenyan flag stripes */}
-      <div className="w-full h-2 bg-black" />
-      <div className="w-full h-0.5 bg-white" />
-      <div className="w-full bg-red-700 shadow flex items-center justify-between h-16 px-4">
+      <div className="w-full bg-black shadow flex items-center justify-between h-16 px-4">
         <div className="flex-1 flex items-center">
           <a
             href="#home"
@@ -99,7 +89,7 @@ function Navbar({ onNav, current, isAuthenticated, onLogout }) {
       </div>
       {/* Mobile menu */}
       {open && (
-        <div id="mobile-menu" className="md:hidden bg-red-700 px-2 pb-3 pt-2 space-y-1" role="menu">
+        <div id="mobile-menu" className="md:hidden bg-black px-2 pb-3 pt-2 space-y-1" role="menu">
           <button
             className={`block w-full text-left py-2 px-3 rounded hover:text-green-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 ${current === 'home' ? 'underline text-green-400' : 'text-white'}`}
             onClick={() => {onNav('home'); setOpen(false);}}
@@ -136,8 +126,6 @@ function Navbar({ onNav, current, isAuthenticated, onLogout }) {
           )}
         </div>
       )}
-      <div className="w-full h-0.5 bg-white" />
-      <div className="w-full h-2 bg-green-700" />
     </nav>
   );
 }
@@ -153,7 +141,7 @@ function Hero({ onCTAClick }) {
         className="absolute inset-0 w-full h-full bg-center bg-cover"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80')"
+            "url('/Agriculture.jpg')"
         }}
         aria-hidden="true"
       />
@@ -168,7 +156,7 @@ function Hero({ onCTAClick }) {
           Agri-Link connects farmers and buyers across Kenya, making it easy to trade fresh produce, manage orders, and grow your agribusiness.
         </p>
         <button
-          className="bg-green-700 hover:bg-green-800 text-white font-semibold py-3 px-8 rounded shadow focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="bg-red-700 hover:bg-red-800 text-white font-semibold py-3 px-8 rounded shadow focus:outline-none focus:ring-2 focus:ring-green-400"
           onClick={onCTAClick}
           aria-label="View Services"
         >
@@ -511,7 +499,7 @@ function App() {
             </>
           )}
         </main>
-        <footer className="bg-green-700 text-white text-center py-4 mt-8 footer-green">
+        <footer className="bg-green-700 text-white text-center py-4 mt-8">
           &copy; {new Date().getFullYear()} Digi-Shamba. All rights reserved.
         </footer>
       </div>

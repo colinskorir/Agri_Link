@@ -221,14 +221,6 @@
   z-index: 1;
 }
 
-/* Hero background image */
-.hero-bg {
-  background-image: url('/Agriculture.jpg') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-
 /* Underline on hover for nav brand */
 .underline-hover:hover {
   text-decoration: underline;
