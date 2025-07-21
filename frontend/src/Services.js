@@ -32,12 +32,12 @@ function Services() {
     }
   ];
   return (
-    <section className="py-20 bg-white services-section" id="services" aria-label="Services">
+    <section className="py-20 bg-white" id="services" aria-label="Services">
       <div className="max-w-5xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-green-800 mb-8 text-center">Our Services</h2>
         <div className="grid gap-8 md:grid-cols-3">
           {cards.map((card, i) => (
-            <div key={i} className="card" tabIndex="0" aria-label={card.title}>
+            <div key={i} className="bg-green-50 rounded-lg shadow p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow" tabIndex="0" aria-label={card.title}>
               {card.icon}
               <h3 className="text-xl font-semibold text-green-900 mb-2">{card.title}</h3>
               <p className="text-green-800">{card.desc}</p>

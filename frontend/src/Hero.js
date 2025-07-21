@@ -16,15 +16,15 @@ function Hero({ onCTAClick }) {
       <div className="absolute inset-0 bg-green-900 bg-opacity-60" aria-hidden="true" />
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center w-full px-4">
-        <h1 className="text-4xl text-white mb-4 text-center drop-shadow-lg">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 text-center drop-shadow-lg">
           Empowering Kenyan Farmers
         </h1>
-        <p className="text-lg text-green-100 mb-8 text-center max-w-xl drop-shadow">
+        <p className="text-lg md:text-xl text-green-100 mb-8 text-center max-w-xl drop-shadow">
           Digi-shamba connects farmers and buyers across Kenya, making it easy to trade fresh produce, manage orders, and grow your agribusiness.
         </p>
         <button
           type="button"
-          className="button-main bg-red-700 hover:bg-red-800 focus:ring-2 focus:ring-red-400 px-8 py-3 rounded-full text-lg shadow-lg transition-all duration-200"
+          className="bg-red-700 hover:bg-red-800 text-white font-semibold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
           onClick={onCTAClick}
           aria-label="View Services"
         >
