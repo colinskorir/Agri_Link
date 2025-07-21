@@ -38,6 +38,11 @@ function FarmerDashboard() {
   };
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    // Explicit validation for required fields
+    if (!form.type || !form.quantity || !form.price || !form.harvestDate) {
+      // Optionally, you can set an error state here to show a message
+      return;
+    }
     if (form.id) {
       setListings(listings.map(l => l.id === form.id ? { ...form, id: form.id } : l));
     } else {
