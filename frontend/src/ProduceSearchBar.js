@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setListings } from './produceSlice';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -8,7 +6,6 @@ function ProduceSearchBar() {
   const [type, setType] = useState('');
   const [location, setLocation] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const dispatch = useDispatch();
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -19,7 +16,8 @@ function ProduceSearchBar() {
     try {
       const res = await fetch(url);
       const data = await res.json();
-      dispatch(setListings(data));
+      console.log('Search results:', data);
+      // For now, just log the results. You can add a callback prop to handle the results
     } catch (err) {
       console.error('Failed to search listings:', err);
     }

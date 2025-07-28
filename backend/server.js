@@ -37,15 +37,31 @@ app.get('/api/produce-config', (req, res) => {
 
 // User registration endpoint
 app.post('/api/register', async (req, res) => {
-  const { userType, name, email, password, location, businessType } = req.body;
+  const { userType, name, location, password, businessType } = req.body;
 
   try {
+    // Check if user with this name already exists
+    const existingUser = await pool.query('SELECT * FROM Users WHERE name = $1', [name]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'User with this name already exists' });
+    }
+    
+    // Generate unique email
+    const randomNum = Math.floor(Math.random() * 10000);
+    const email = `${name.toLowerCase().replace(/\s+/g, '')}${randomNum}@digishamba.com`;
+    
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO Users (role, name, email, password_hash, location, business_type) VALUES ($1, $2, $3, $4, $5, $6)';
+    
+    const query = 'INSERT INTO Users (role, name, email, password_hash, location, business_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
     const values = [userType, name, email, hashedPassword, location, businessType];
     
-    await pool.query(query, values);
-    res.status(201).json({ message: 'User registered successfully' });
+    const { rows } = await pool.query(query, values);
+    const user = rows[0];
+    
+    // Remove password_hash from response
+    delete user.password_hash;
+    
+    res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ error: 'Error registering user' });
@@ -54,11 +70,11 @@ app.post('/api/register', async (req, res) => {
 
 // User login endpoint
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { name, password } = req.body;
 
-  const query = 'SELECT * FROM Users WHERE email = $1';
+  const query = 'SELECT * FROM Users WHERE name = $1';
   try {
-    const { rows } = await pool.query(query, [email]);
+    const { rows } = await pool.query(query, [name]);
 
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -70,6 +86,9 @@ app.post('/api/login', async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    // Remove password_hash from response
+    delete user.password_hash;
 
     res.status(200).json({ message: 'Login successful', user });
   } catch (error) {

@@ -21,7 +21,7 @@ const reviews = [
   { reviewer: 'Buyer B', rating: 4, comment: 'Fast delivery.' },
 ];
 
-function FarmerDashboard() {
+function FarmerDashboard({ user }) {
   const [listings, setListings] = useState(initialListings);
   const [orders, setOrders] = useState(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -29,7 +29,7 @@ function FarmerDashboard() {
   const [form, setForm] = useState({ id: null, type: '', quantity: '', price: '', harvestDate: '', image_url: '' });
   const [message, setMessage] = useState('');
   const [activeSection, setActiveSection] = useState('dashboard');
-  const [role, setRole] = useState('farmer'); // Assuming default role is farmer
+  const [role, setRole] = useState(user?.role || 'farmer');
 
   useEffect(() => {
     fetchListings();
@@ -50,8 +50,8 @@ function FarmerDashboard() {
   // Fetch orders from backend
   const fetchOrders = async () => {
     try {
-      // Replace farmer_id with actual logged-in farmer's ID
-      const farmer_id = 1;
+      // Use actual logged-in user's ID
+      const farmer_id = user?.id || 1;
       const res = await fetch(`${API_BASE}/orders?farmer_id=${farmer_id}`);
       const data = await res.json();
       setOrders(data);
@@ -68,7 +68,7 @@ function FarmerDashboard() {
       await handleUpdateListing();
     } else {
       try {
-        const farmer_id = 1;
+        const farmer_id = user?.id || 1;
         const res = await fetch(`${API_BASE}/products`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -185,8 +185,16 @@ function FarmerDashboard() {
   };
 
   return (
-    <div className="dashboard-container" role="main" aria-label="Farmer Dashboard">
-      <h2 tabIndex="0">Farmer Dashboard</h2>
+    <div className="dashboard-container" role="main" aria-label="User Dashboard">
+      <h2 tabIndex="0">Welcome, {user?.name || 'User'}!</h2>
+      {user && (
+        <div className="user-info">
+          <p><strong>Role:</strong> {user.role === 'farmer' ? 'Farmer' : 'Buyer'}</p>
+          <p><strong>Location:</strong> {user.location}</p>
+          {user.business_type && <p><strong>Business Type:</strong> {user.business_type}</p>}
+        </div>
+      )}
+      
       {/* Produce Listings */}
       {activeSection === 'dashboard' && (
         <>
@@ -194,7 +202,9 @@ function FarmerDashboard() {
           <section className="card" aria-label="Produce Listings">
             <div className="section-header">
               <h3 tabIndex="0">Produce Listings</h3>
-              <button className="add-btn" aria-label="Add new produce listing" onClick={() => { setShowForm(true); setForm({ id: null, type: '', quantity: '', price: '', harvestDate: '' }); }}>+ Add</button>
+              {role === 'farmer' && (
+                <button className="add-btn" aria-label="Add new produce listing" onClick={() => { setShowForm(true); setForm({ id: null, type: '', quantity: '', price: '', harvestDate: '' }); }}>+ Add</button>
+              )}
             </div>
             <ul className="listing-list">
               {listings.map(listing => (
@@ -203,14 +213,21 @@ function FarmerDashboard() {
                     {listing.image_url && <img src={listing.image_url} alt={listing.type} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', marginRight: '8px' }} />}
                     <strong>{listing.type}</strong> | Qty: {listing.quantity} | KES {listing.price} | Harvest: {listing.harvestDate}
                   </div>
-                  <div>
-                    <button aria-label={`Edit ${listing.type}`} onClick={() => handleEdit(listing)}>Edit</button>
-                    <button aria-label={`Delete ${listing.type}`} onClick={() => handleDelete(listing.id)} className="delete-btn">Delete</button>
-                  </div>
+                  {role === 'farmer' && (
+                    <div>
+                      <button aria-label={`Edit ${listing.type}`} onClick={() => handleEdit(listing)}>Edit</button>
+                      <button aria-label={`Delete ${listing.type}`} onClick={() => handleDelete(listing.id)} className="delete-btn">Delete</button>
+                    </div>
+                  )}
+                  {role === 'buyer' && (
+                    <div>
+                      <button aria-label={`Buy ${listing.type}`} onClick={() => console.log('Buy clicked for', listing.type)}>Buy</button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
-            {showForm && (
+            {showForm && role === 'farmer' && (
               <form className="listing-form" onSubmit={handleFormSubmit} aria-label="Produce Form">
                 <input name="type" placeholder="Type" value={form.type} onChange={handleFormChange} required aria-label="Produce Type" />
                 <input name="quantity" type="number" placeholder="Quantity" value={form.quantity} onChange={handleFormChange} required aria-label="Quantity" />
@@ -277,9 +294,9 @@ function FarmerDashboard() {
           <h3 tabIndex="0">Profile</h3>
           <div className="profile-section">
             <div className="profile-info">
-              <img src="https://ui-avatars.com/api/?name=Farmer" alt="Farmer" className="avatar" />
+              <img src={`https://ui-avatars.com/api/?name=${user?.name || 'Farmer'}`} alt={user?.name || 'Farmer'} className="avatar" />
               <div>
-                <div><strong>Farmer Name</strong></div>
+                <div><strong>{user?.name || 'Farmer Name'}</strong></div>
                 <div>Certifications:</div>
                 <ul className="cert-list">
                   {certifications.map((cert, idx) => <li key={idx}>{cert}</li>)}
