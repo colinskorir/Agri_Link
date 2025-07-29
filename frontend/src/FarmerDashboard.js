@@ -41,9 +41,10 @@ function FarmerDashboard({ user }) {
     try {
       const res = await fetch(`${API_BASE}/products`);
       const data = await res.json();
-      setListings(data);
+      setListings(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch listings:', err);
+      setListings([]); // Defensive: set to empty array on error
     }
   };
 
@@ -207,7 +208,7 @@ function FarmerDashboard({ user }) {
               )}
             </div>
             <ul className="listing-list">
-              {listings.map(listing => (
+              {(Array.isArray(listings) ? listings : []).map(listing => (
                 <li key={listing.id} className="listing-item">
                   <div>
                     {listing.image_url && <img src={listing.image_url} alt={listing.type} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px', marginRight: '8px' }} />}

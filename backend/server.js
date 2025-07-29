@@ -122,7 +122,7 @@ function authenticateJWT(req, res, next) {
 }
 
 // Example: Protect /api/products with JWT
-app.get('/api/products', authenticateJWT, async (req, res) => {
+app.get('/api/products', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM Produce_Listings');
     res.json(rows);
@@ -316,7 +316,12 @@ app.post('/api/seed-products', async (req, res) => {
 app.get('/api/orders', async (req, res) => {
   const { farmer_id } = req.query;
   try {
-    const query = 'SELECT * FROM Orders WHERE farmer_id = $1';
+    const query = `
+      SELECT Orders.*
+      FROM Orders
+      JOIN Produce_Listings ON Orders.listing_id = Produce_Listings.id
+      WHERE Produce_Listings.farmer_id = $1
+    `;
     const { rows } = await pool.query(query, [farmer_id]);
     res.json(rows);
   } catch (err) {
