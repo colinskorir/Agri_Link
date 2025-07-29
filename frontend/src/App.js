@@ -30,25 +30,24 @@ function App() {
   const handleAuth = async (authData) => {
     try {
       const endpoint = authData.isLogin ? '/api/login' : '/api/register';
-      
       let requestBody;
       if (authData.isLogin) {
         // Login format
         requestBody = {
-          name: authData.name,
+          email: authData.email,
           password: authData.password
         };
       } else {
         // Registration format
         requestBody = {
           name: authData.name,
+          email: authData.email,
           location: authData.location,
           password: authData.password,
           userType: authData.userType,
           businessType: authData.businessType || null
         };
       }
-      
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -56,20 +55,44 @@ function App() {
         },
         body: JSON.stringify(requestBody),
       });
-
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData.user || userData); // Handle both response formats
+        setUser(userData.user || userData);
         setIsAuthenticated(true);
         localStorage.setItem('user', JSON.stringify(userData.user || userData));
+        if (userData.token) {
+          localStorage.setItem('token', userData.token);
+        }
         return { success: true };
       } else {
-        const errorData = await response.json();
-        return { success: false, error: errorData.error || 'Authentication failed' };
+        let errorMsg = 'Authentication failed';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.error || errorMsg;
+        } catch (jsonErr) {
+          errorMsg = response.statusText || errorMsg;
+        }
+        return { success: false, error: errorMsg };
       }
     } catch (error) {
-      return { success: false, error: 'Network error. Please try again.' };
+      if (error.name === 'TypeError' && error.message && error.message.includes('NetworkError')) {
+        return { success: false, error: 'Network error. Please try again.' };
+      } else {
+        return { success: false, error: error.message || 'An unexpected error occurred.' };
+      }
     }
+  };
+
+  // Helper to make authenticated requests
+  const authFetch = (url, options = {}) => {
+    const token = localStorage.getItem('token');
+    return fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        'Authorization': token ? `Bearer ${token}` : '',
+      },
+    });
   };
 
   const handleLogout = () => {
