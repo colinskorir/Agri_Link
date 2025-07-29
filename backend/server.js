@@ -15,11 +15,8 @@ app.use(bodyParser.json());
 
 // Database connection
 const pool = new Pool({
-  user: 'locco',
-  host: 'localhost',
-  database: 'agri_link',
-  password: '123456789',
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 pool.connect(err => {
