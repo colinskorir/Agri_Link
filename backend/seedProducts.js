@@ -1,56 +1,50 @@
 // seedProducts.js
-// Script to automate seeding products via backend API
 
 const axios = require('axios');
 
 const API_URL = 'http://localhost:5000/api/products'; // Adjust if your backend runs on a different port
 
 // Sample products to seed
-const products = [
+const sampleProducts = [
   {
-    farmer_id: 1, // Replace with actual farmer_id if needed
     type: 'Garlic',
-    quantity: 100,
-    price: 50,
-    harvest_date: new Date().toISOString().split('T')[0],
-    image_url: 'https://via.placeholder.com/150',
-  },
-  {
-    farmer_id: 1,
-    type: 'Cabbages',
-    quantity: 50,
-    price: 80,
-    harvest_date: new Date().toISOString().split('T')[0],
-    image_url: 'https://via.placeholder.com/150',
-  },
-  {
-    farmer_id: 1,
-    type: 'Potatoes',
-    quantity: 200,
-    price: 60,
-    harvest_date: new Date().toISOString().split('T')[0],
-    image_url: 'https://via.placeholder.com/150',
-  },
-  {
-    farmer_id: 1,
-    type: 'Avocado',
-    quantity: 75,
+    quantity: 1000,
     price: 30,
-    harvest_date: new Date().toISOString().split('T')[0],
-    image_url: 'https://via.placeholder.com/150',
+    harvest_date: '2025-07-01',
+    image_url: 'https://snaped.fns.usda.gov/sites/default/files/styles/crop_ratio_7_5/public/seasonal-produce/2018-05/garlic.jpg.webp' 
   },
   {
-    farmer_id: 1,
-    type: 'Green grams',
-    quantity: 120,
-    price: 150,
-    harvest_date: new Date().toISOString().split('T')[0],
-    image_url: 'https://via.placeholder.com/150',
+    type: 'Cabbages',
+    quantity: 500,
+    price: 80,
+    harvest_date: '2025-06-15',
+    image_url: 'https://www.google.com/imgres?q=cabbages&imgurl=https%3A%2F%2Fwww.greenlife.co.ke%2Fwp-content%2Fuploads%2F2022%2F04%2FCabbage.jpg&imgrefurl=https%3A%2F%2Fwww.greenlife.co.ke%2Fcabbage-planting-guide%2F&docid=2uaMnwk3xO6aoM&tbnid=XlVAfhogmK6dpM&vet=12ahUKEwj-yIGsxuGOAxUIfKQEHTQQMtQQM3oECCUQAA..i&w=2000&h=1329&hcb=2&ved=2ahUKEwj-yIGsxuGOAxUIfKQEHTQQMtQQM3oECCUQAA'
   },
+  {
+    type: 'Tomatoes',
+    quantity: 300,
+    price: 50,
+    harvest_date: '2025-07-10',
+    image_url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80' // tomatoes
+  },
+  {
+    type: 'potatoes',
+    quantity: 800,
+    price: 40,
+    harvest_date: '2025-07-05',
+    image_url: 'https://images.unsplash.com/photo-1506089676908-3592f7389d4d?auto=format&fit=crop&w=400&q=80' // potatoes
+  },
+  {
+    type: 'Cabbage',
+    quantity: 200,
+    price: 25,
+    harvest_date: '2025-07-12',
+    image_url: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80' // cabbage
+  }
 ];
 
 async function seedProducts() {
-  for (const product of products) {
+  for (const product of sampleProducts) {
     try {
       const res = await axios.post(API_URL, product);
       console.log(`Seeded: ${product.type}`);

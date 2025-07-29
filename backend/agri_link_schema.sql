@@ -23,7 +23,8 @@ CREATE TABLE Produce_Listings (
     type VARCHAR(100) NOT NULL,
     quantity NUMERIC(10,2) NOT NULL,
     price NUMERIC(10,2) NOT NULL,
-    harvest_date DATE NOT NULL
+    harvest_date DATE NOT NULL,
+    image_url TEXT DEFAULT NULL
 );
 
 -- Orders table

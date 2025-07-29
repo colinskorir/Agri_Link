@@ -28,6 +28,15 @@ h2 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.produce-image {
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
 .buy-btn {
   background: #b91c1c;
   color: #fff;
