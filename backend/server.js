@@ -27,6 +27,9 @@ pool.connect(err => {
   console.log('Connected to database');
 });
 
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
 
 // Endpoint to serve produce config
 app.get('/api/produce-config', (req, res) => {
