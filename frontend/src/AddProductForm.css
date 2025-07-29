@@ -1,0 +1,60 @@
+.add-product-form-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f0fdf4; /* A light green to match the theme */
+  border: 1px solid #dcfce7;
+  border-radius: 8px;
+}
+
+.add-product-form-container h3 {
+  text-align: center;
+  color: #166534; /* Dark green text */
+  margin-bottom: 1.5rem;
+}
+
+.add-product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.add-product-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #14532d;
+}
+
+.add-product-form input {
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.add-product-form button {
+  background: #15803d; /* Green button */
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-product-form button:hover {
+  background: #166534;
+}
+
+.add-product-form button:disabled {
+  background-color: #a3a3a3;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #b91c1c; /* Red text for errors */
+  text-align: center;
+  margin-top: 0.5rem;
+} 
