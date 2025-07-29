@@ -34,7 +34,9 @@ function App() {
       if (authData.isLogin) {
         // Login format
         requestBody = {
+
           email: authData.email,
+                    name: authData.name,
           password: authData.password
         };
       } else {

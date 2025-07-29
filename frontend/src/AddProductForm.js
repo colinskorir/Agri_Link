@@ -5,6 +5,7 @@ const AddProductForm = ({ user, onProductAdded }) => {
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [harvestDate, setHarvestDate] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +23,8 @@ const AddProductForm = ({ user, onProductAdded }) => {
           type,
           quantity,
           price,
-          harvest_date: harvestDate
+          harvest_date: harvestDate,
+          image_url: imageUrl
         }),
       });
       if (!response.ok) {
@@ -35,6 +37,7 @@ const AddProductForm = ({ user, onProductAdded }) => {
       setQuantity('');
       setPrice('');
       setHarvestDate('');
+      setImageUrl('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -61,6 +64,10 @@ const AddProductForm = ({ user, onProductAdded }) => {
         <label>
           Harvest Date:
           <input type="date" value={harvestDate} onChange={e => setHarvestDate(e.target.value)} required />
+        </label>
+        <label>
+          Image URL:
+          <input type="url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://example.com/image.jpg" />
         </label>
         <button type="submit" disabled={loading}>
           {loading ? 'Adding...' : 'Add Product'}

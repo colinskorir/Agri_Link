@@ -52,10 +52,10 @@ const ProduceList = ({ user }) => {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setMessage('Payment request sent! Check your phone to complete the transaction.');
+      if (res.ok && data.success) {
+        setMessage(data.message || 'Payment request sent! Check your phone to complete the transaction.');
       } else {
-        setMessage('Payment failed: ' + (data.error || 'Unknown error'));
+        setMessage('Payment failed: ' + (data.error || data.details || 'Unknown error'));
       }
     } catch (err) {
       setMessage('Network error: ' + err.message);
@@ -84,10 +84,16 @@ const ProduceList = ({ user }) => {
       ) : (
         <ul className="produce-list">
           {products.map(product => (
-            <li key={product.id} className="produce-item">
-              <strong>{product.type}</strong><br/>
-              Amount: {product.quantity} kg<br/>
-              Price: KES {product.price} per kg<br/>
+            <li key={product._id || product.type} className="produce-item">
+              {product.image_url && (
+                <img src={product.image_url} alt={product.type} style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '1rem' }} />
+              )}
+              <div>
+                <strong>{product.type}</strong><br/>
+                Quantity: {product.quantity}<br/>
+                Price: KES {product.price}<br/>
+                Harvest Date: {product.harvest_date}
+              </div>
               <button onClick={() => handleBuySell('buy', product)} className="buy-btn">Buy</button>
               <button onClick={() => handleBuySell('sell', product)} className="sell-btn">Sell</button>
             </li>

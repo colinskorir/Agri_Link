@@ -165,27 +165,48 @@ app.put('/api/products/:id', async (req, res) => {
 app.post('/api/pay', async (req, res) => {
   const { phone, amount, product } = req.body;
 
+  // Validate required fields
+  if (!phone || !amount || !product) {
+    return res.status(400).json({ error: 'Missing required fields: phone, amount, product' });
+  }
+
+  // Validate amount
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Amount must be greater than 0' });
+  }
+
   // Validate and format phone number
   let formattedPhone = phone.startsWith('254') ? phone : `254${phone.slice(-9)}`;
   if (!/^(254)\d{9}$/.test(formattedPhone)) {
     return res.status(400).json({ error: 'Invalid phone number format. Use 254...' });
   }
 
-  // Daraja credentials (replace with your own)
-  const consumerKey = 'cdx4YamGNt2h2BH3BHCNbLJzLUi2QF6DinS8S9V0VIarD275';
-  const consumerSecret = 'JL1b7JZ9Ne0rHynALuckxtyWJGlUiSgiwPaLzJIKhINtqm8lxk9hFzFAbpICuMNi';
-  const businessShortCode = '174379';
-  const passkey = 'bfb279f9aa9bdbcf158e99dd770b4bcf924c8b3d9f78a7e73be5e505bf86d97';
-  const callbackURL = 'https://yourdomain.com/api/daraja-callback'; // Can be a dummy URL for dev
+  // Daraja credentials (Sandbox for development/testing)
+  // IMPORTANT: Replace these with your actual credentials from https://developer.safaricom.co.ke/
+  const consumerKey = 'BwB7edqKkAzJXhdkIWMPhInur5A0wEnJWlbr1oG7cVRMUdyl'; // Get this from Safaricom developer portal
+  const consumerSecret = 'UrQo5u0Pc89AKGmdTXHLD5A7HxQqfZ2yTXwWtS3WE0fYMAsHWRLMflCzYXI1dwPa'; // Get this from Safaricom developer portal
+  const businessShortCode = '174379'; // Safaricom Sandbox Shortcode
+  const passkey = 'bfb279f9aa9bdbcf158e99dd770b4bcf924c8b3d9f78a7e73be5e505bf86d97'; // Sandbox passkey
+  
+  // IMPORTANT: Replace this with your actual ngrok URL when testing
+  // Run: ngrok http 5000 and use the HTTPS URL it provides
+  const callbackURL = 'https://your-actual-ngrok-url.ngrok.io/api/daraja-callback';
 
   // Get access token
   const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
   try {
+    console.log('Requesting access token from Safaricom...');
     const { data: tokenRes } = await axios.get(
       'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
       { headers: { Authorization: `Basic ${auth}` } }
     );
+    
+    if (!tokenRes.access_token) {
+      throw new Error('Failed to get access token from Safaricom');
+    }
+    
     const accessToken = tokenRes.access_token;
+    console.log('Access token obtained successfully');
 
     // Prepare STK Push request
     const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
@@ -204,6 +225,8 @@ app.post('/api/pay', async (req, res) => {
       TransactionDesc: `Payment for ${product}`,
     };
 
+    console.log('Sending STK Push to phone:', formattedPhone, 'Amount:', amount);
+    
     // Send STK Push
     const { data: stkRes } = await axios.post(
       'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
@@ -211,10 +234,52 @@ app.post('/api/pay', async (req, res) => {
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
 
-    res.json({ success: true, stkRes });
+    console.log('STK Push response:', stkRes);
+    
+    if (stkRes.ResponseCode === '0') {
+      res.json({ 
+        success: true, 
+        message: 'Payment prompt sent successfully! Check your phone to complete the transaction.',
+        checkoutRequestID: stkRes.CheckoutRequestID,
+        merchantRequestID: stkRes.MerchantRequestID,
+        stkRes 
+      });
+    } else {
+      res.status(400).json({ 
+        error: 'Failed to send payment prompt', 
+        details: stkRes.ResponseDescription || 'Unknown error',
+        stkRes 
+      });
+    }
   } catch (err) {
     console.error('Daraja error:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Daraja payment failed', details: err.response?.data || err.message });
+    res.status(500).json({ 
+      error: 'Daraja payment failed', 
+      details: err.response?.data || err.message 
+    });
+  }
+});
+
+// Callback endpoint to receive payment results from Safaricom
+app.post('/api/daraja-callback', (req, res) => {
+  console.log('Received callback from Safaricom:', req.body);
+  
+  try {
+    const { Body } = req.body;
+    const { stkCallback } = Body;
+    
+    if (stkCallback.ResultCode === 0) {
+      // Payment successful
+      console.log('Payment successful:', stkCallback);
+      res.json({ success: true, message: 'Payment processed successfully' });
+    } else {
+      // Payment failed
+      console.log('Payment failed:', stkCallback);
+      res.json({ success: false, message: 'Payment failed', details: stkCallback.ResultDesc });
+    }
+  } catch (error) {
+    console.error('Error processing callback:', error);
+    res.status(500).json({ error: 'Error processing callback' });
   }
 });
 
