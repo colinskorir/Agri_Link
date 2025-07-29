@@ -1,4 +1,5 @@
 import React from "react";
+import BackgroundSlider from './BackgroundSlider';
 
 function Hero({ onCTAClick }) {
   return (
@@ -6,12 +7,8 @@ function Hero({ onCTAClick }) {
       className="relative flex flex-col justify-center items-center min-h-screen pt-16 overflow-hidden"
       id="hero"
     >
-      {/* Background image */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{ backgroundImage: "url('/Agriculture.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}
-        aria-hidden="true"
-      />
+      {/* Background image slider */}
+      <BackgroundSlider />
       {/* Overlay */}
       <div className="absolute inset-0 bg-green-900 bg-opacity-60" aria-hidden="true" />
       {/* Content */}
@@ -22,14 +19,13 @@ function Hero({ onCTAClick }) {
         <p className="text-lg md:text-xl text-green-100 mb-8 text-center max-w-xl drop-shadow">
           Digi-shamba connects farmers and buyers across Kenya, making it easy to trade fresh produce, manage orders, and grow your agribusiness.
         </p>
-        <button
-          type="button"
+        <a
+          href="#services"
           className="bg-red-700 hover:bg-red-800 text-white font-semibold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
-          onClick={onCTAClick}
           aria-label="View Services"
         >
           View Services
-        </button>
+        </a>
       </div>
     </section>
   );

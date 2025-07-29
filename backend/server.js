@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
 const app = express();
 
@@ -37,68 +39,90 @@ app.get('/api/produce-config', (req, res) => {
 
 // User registration endpoint
 app.post('/api/register', async (req, res) => {
-  const { userType, name, location, password, businessType } = req.body;
+  const { userType, name, email, location, password, businessType } = req.body;
+
+  // Validate required fields
+  if (!userType || !name || !email || !location || !password) {
+    return res.status(400).json({ error: 'All fields (userType, name, email, location, password) are required.' });
+  }
 
   try {
-    // Check if user with this name already exists
-    const existingUser = await pool.query('SELECT * FROM Users WHERE name = $1', [name]);
+    // Check if user with this email already exists
+    const existingUser = await pool.query('SELECT * FROM Users WHERE email = $1', [email]);
     if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: 'User with this name already exists' });
+      return res.status(400).json({ error: 'User with this email already exists' });
     }
-    
-    // Generate unique email
-    const randomNum = Math.floor(Math.random() * 10000);
-    const email = `${name.toLowerCase().replace(/\s+/g, '')}${randomNum}@digishamba.com`;
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const query = 'INSERT INTO Users (role, name, email, password_hash, location, business_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
     const values = [userType, name, email, hashedPassword, location, businessType];
-    
+
     const { rows } = await pool.query(query, values);
     const user = rows[0];
-    
+
     // Remove password_hash from response
     delete user.password_hash;
-    
+
     res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Error registering user' });
+    res.status(500).json({ error: error.message || 'Error registering user' });
   }
 });
 
-// User login endpoint
+// User login endpoint (now supports email)
 app.post('/api/login', async (req, res) => {
-  const { name, password } = req.body;
-
-  const query = 'SELECT * FROM Users WHERE name = $1';
+  const { email, name, password } = req.body;
+  let userQuery, userParam;
+  if (email) {
+    userQuery = 'SELECT * FROM Users WHERE email = $1';
+    userParam = email;
+  } else if (name) {
+    userQuery = 'SELECT * FROM Users WHERE name = $1';
+    userParam = name;
+  } else {
+    return res.status(400).json({ error: 'Email or name is required' });
+  }
   try {
-    const { rows } = await pool.query(query, [name]);
-
+    const { rows } = await pool.query(userQuery, [userParam]);
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
     const user = rows[0];
     const passwordMatch = await bcrypt.compare(password, user.password_hash);
-
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    // Remove password_hash from response
     delete user.password_hash;
-
-    res.status(200).json({ message: 'Login successful', user });
+    // Create JWT token
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '2h' });
+    res.status(200).json({ message: 'Login successful', user, token });
   } catch (error) {
     console.error('Error logging in:', error);
-    res.status(500).json({ error: 'Error logging in' });
+    res.status(500).json({ error: error.message || 'Error logging in' });
   }
 });
 
-// Get all produce listings
-app.get('/api/products', async (req, res) => {
+// JWT verification middleware
+function authenticateJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ error: 'Invalid or expired token' });
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).json({ error: 'Authorization token required' });
+  }
+}
+
+// Example: Protect /api/products with JWT
+app.get('/api/products', authenticateJWT, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM Produce_Listings');
     res.json(rows);
@@ -349,3 +373,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });
+
+
