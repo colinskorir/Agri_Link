@@ -29,11 +29,7 @@ Digi-shamba/
    cd backend
    npm install
    ```
-2. **Configure Daraja Credentials:**
-   - Open `backend/server.js`.
-   - Replace the placeholder values for `consumerKey` and `consumerSecret` with your own from the [Safaricom Developer Portal](https://developer.safaricom.co.ke/).
-   - Ensure `businessShortCode` and `passkey` are set to the sandbox values for testing.
-3. **Set up ngrok for callback URL:**
+2. **Set up ngrok for callback URL:**
    - In a new terminal, run:
      ```bash
      ngrok http 5000
@@ -43,7 +39,7 @@ Digi-shamba/
      ```js
      const callbackURL = 'https://abc12345.ngrok.io/api/daraja-callback';
      ```
-4. **Start the backend server:**
+3. **Start the backend server:**
    ```bash
    npm start
    ```
@@ -63,18 +59,8 @@ Digi-shamba/
 ## Daraja (M-Pesa) Payment Integration
 - When a buyer initiates a purchase, the backend sends an STK Push to the provided phone number using the Daraja API.
 - The phone number must be in the format `2547XXXXXXXX`.
-- The backend listens for payment results on `/api/daraja-callback` (ensure this is accessible via ngrok for testing).
+- The backend listens for payment results on `/api/daraja-callback`.
 
-## Troubleshooting
-- **Port 5000 already in use:**
-  - Run `lsof -i :5000` and `kill -9 <PID>` to free the port.
-- **Daraja error: Wrong credentials:**
-  - Double-check your `consumerKey` and `consumerSecret` in `server.js`.
-- **No M-Pesa prompt received:**
-  - Ensure the phone number is correct and in the right format.
-  - Make sure your callback URL is a public ngrok URL and your backend is running.
-- **Frontend/backend connection issues:**
-  - Ensure the proxy in `frontend/package.json` matches your backend port.
 
 ## License
 This project is for educational purposes. Adapt and use as needed.
