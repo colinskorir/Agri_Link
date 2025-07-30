@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -183,14 +185,14 @@ app.post('/api/pay', async (req, res) => {
 
   // Daraja credentials (Sandbox for development/testing)
   // IMPORTANT: Replace these with your actual credentials from https://developer.safaricom.co.ke/
-  const consumerKey = 'BwB7edqKkAzJXhdkIWMPhInur5A0wEnJWlbr1oG7cVRMUdyl'; // Get this from Safaricom developer portal
-  const consumerSecret = 'UrQo5u0Pc89AKGmdTXHLD5A7HxQqfZ2yTXwWtS3WE0fYMAsHWRLMflCzYXI1dwPa'; // Get this from Safaricom developer portal
+  const consumerKey = 'cdx4YamGNt2h2BH3BHCNbLJzLUi2QF6DinS8S9V0VIarD275';
+  const consumerSecret = 'JL1b7JZ9Ne0rHynALuckxtyWJGlUiSgiwPaLzJIKhINtqm8lxk9hFzFAbpICuMNi';
   const businessShortCode = '174379'; // Safaricom Sandbox Shortcode
   const passkey = 'bfb279f9aa9bdbcf158e99dd770b4bcf924c8b3d9f78a7e73be5e505bf86d97'; // Sandbox passkey
   
   // IMPORTANT: Replace this with your actual ngrok URL when testing
   // Run: ngrok http 5000 and use the HTTPS URL it provides
-  const callbackURL = 'https://your-actual-ngrok-url.ngrok.io/api/daraja-callback';
+  const callbackURL = 'https://3aae25fd4706.ngrok-free.app/api/daraja-callback';
 
   // Get access token
   const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
