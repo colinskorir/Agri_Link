@@ -188,7 +188,7 @@ app.post('/api/pay', async (req, res) => {
   const consumerKey = 'cdx4YamGNt2h2BH3BHCNbLJzLUi2QF6DinS8S9V0VIarD275';
   const consumerSecret = 'JL1b7JZ9Ne0rHynALuckxtyWJGlUiSgiwPaLzJIKhINtqm8lxk9hFzFAbpICuMNi';
   const businessShortCode = '174379'; // Safaricom Sandbox Shortcode
-  const passkey = 'bfb279f9aa9bdbcf158e99dd770b4bcf924c8b3d9f78a7e73be5e505bf86d97'; // Sandbox passkey
+  const passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'; // Sandbox passkey
   
   // IMPORTANT: Replace this with your actual ngrok URL when testing
   // Run: ngrok http 5000 and use the HTTPS URL it provides

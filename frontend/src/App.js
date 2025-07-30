@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import AuthPage from './AuthPage';
 import FarmerDashboard from './FarmerDashboard';
+import BuyerDashboard from './BuyerDashboard';
 import UserProfiles from './UserProfiles';
 import OrderManagement from './OrderManagement';
 import ProduceList from './ProduceList';
@@ -123,7 +124,11 @@ function App() {
                 } />
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
-                    <FarmerDashboard user={user} />
+                    {user?.role === 'farmer' ? (
+                      <FarmerDashboard user={user} />
+                    ) : (
+                      <BuyerDashboard user={user} />
+                    )}
                   </ProtectedRoute>
                 } />
                 <Route path="/users" element={<UserProfiles />} />

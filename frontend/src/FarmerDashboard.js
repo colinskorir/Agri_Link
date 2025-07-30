@@ -11,8 +11,8 @@ const initialListings = [
 ];
 
 const initialOrders = [
-  { id: 1, buyer: 'Jane Doe', produce: 'Maize', quantity: 20, price: 500, status: 'pending', messages: [] },
-  { id: 2, buyer: 'John Mwangi', produce: 'Tomatoes', quantity: 10, price: 300, status: 'pending', messages: [] },
+  { id: 1, buyer: 'Collins Korir', produce: 'Maize', quantity: 20, price: 500, status: 'pending', messages: [] },
+  { id: 2, buyer: 'Edwin Sifuna', produce: 'Tomatoes', quantity: 10, price: 300, status: 'pending', messages: [] },
 ];
 
 const certifications = ['Organic Certified', 'Fair Trade'];
@@ -26,6 +26,11 @@ function FarmerDashboard({ user }) {
   const [orders, setOrders] = useState(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [action, setAction] = useState(null); // { type: 'buy', product }
+  const [phone, setPhone] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [form, setForm] = useState({ id: null, type: '', quantity: '', price: '', harvestDate: '', image_url: '' });
   const [message, setMessage] = useState('');
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -185,6 +190,42 @@ function FarmerDashboard({ user }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Handle buy/sell action for buyers
+  const handleBuySell = (type, product) => {
+    setAction({ type, product });
+    setPhone('');
+    setQuantity('');
+    setPaymentMessage('');
+  };
+
+  // Handle payment submission
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    setPaymentLoading(true);
+    setPaymentMessage('');
+    try {
+      const res = await fetch('/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone,
+          amount: Math.round(quantity * action.product.price),
+          product: action.product.type,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPaymentMessage(data.message || 'Payment request sent! Check your phone to complete the transaction.');
+      } else {
+        setPaymentMessage('Payment failed: ' + (data.error || data.details || 'Unknown error'));
+      }
+    } catch (err) {
+      setPaymentMessage('Network error: ' + err.message);
+    }
+    setPaymentLoading(false);
+    setAction(null);
+  };
+
   return (
     <div className="dashboard-container" role="main" aria-label="User Dashboard">
       <h2 tabIndex="0">Welcome, {user?.name || 'User'}!</h2>
@@ -222,7 +263,7 @@ function FarmerDashboard({ user }) {
                   )}
                   {role === 'buyer' && (
                     <div>
-                      <button aria-label={`Buy ${listing.type}`} onClick={() => console.log('Buy clicked for', listing.type)}>Buy</button>
+                      <button aria-label={`Buy ${listing.type}`} onClick={() => handleBuySell('buy', listing)}>Buy</button>
                     </div>
                   )}
                 </li>
@@ -314,6 +355,99 @@ function FarmerDashboard({ user }) {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Payment Modal for Buyers */}
+      {action && (
+        <div className="daraja-form-modal" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <form className="daraja-form" onSubmit={handlePaymentSubmit} style={{
+            backgroundColor: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '90%'
+          }}>
+            <h3>{action.type === 'buy' ? 'Buy' : 'Sell'} {action.product.type}</h3>
+            <label style={{ display: 'block', marginBottom: '1rem' }}>
+              Phone Number (M-Pesa):
+              <input 
+                type="tel" 
+                value={phone} 
+                onChange={e => setPhone(e.target.value)} 
+                required 
+                pattern="[0-9]{10,}"
+                style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+              />
+            </label>
+            <label style={{ display: 'block', marginBottom: '1rem' }}>
+              Quantity (kg):
+              <input 
+                type="number" 
+                value={quantity} 
+                onChange={e => setQuantity(e.target.value)} 
+                required 
+                min="1" 
+                max={action.product.quantity}
+                style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
+              />
+            </label>
+            <button 
+              type="submit" 
+              disabled={paymentLoading}
+              style={{ 
+                backgroundColor: '#059669', 
+                color: 'white', 
+                padding: '0.5rem 1rem', 
+                border: 'none', 
+                borderRadius: '4px',
+                cursor: paymentLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {paymentLoading ? 'Processing...' : 'Pay with M-Pesa'}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setAction(null)} 
+              disabled={paymentLoading} 
+              style={{
+                marginLeft: '1rem',
+                backgroundColor: '#6B7280',
+                color: 'white',
+                padding: '0.5rem 1rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: paymentLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      )}
+      {paymentMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: paymentMessage.includes('failed') ? '#EF4444' : '#10B981',
+          color: 'white',
+          padding: '1rem',
+          borderRadius: '4px',
+          zIndex: 1001
+        }}>
+          {paymentMessage}
+        </div>
       )}
 
       {/* Bottom Navigation */}
